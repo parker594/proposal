@@ -9,6 +9,7 @@ const JourneySchema = new mongoose.Schema({
     theme: { type: String, default: 'rose' }, // rose, purple, red
     whatsappNumber: { type: String },
     customMessage: { type: String }, // General custom message
+    senderPhoto: { type: String }, // Base64 encoded image
     activeDays: { type: [String], default: ['day1', 'day2', 'day3', 'day4', 'day5', 'day6', 'day7', 'day8'] },
     targetDay: { type: String, default: 'all' }, // 'all' or 'day1', 'day2' etc.
     messages: {

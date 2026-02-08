@@ -23,6 +23,8 @@ const LandingPage = () => {
 
     const [loading, setLoading] = useState(false);
     const [generatedLink, setGeneratedLink] = useState(null);
+    const [senderPhoto, setSenderPhoto] = useState(null);
+    const [photoPreview, setPhotoPreview] = useState(null);
 
     const daysList = [
         { id: 'day1', name: 'Rose Day 🌹' },
@@ -58,6 +60,20 @@ const LandingPage = () => {
         setCustomMessages(prev => ({ ...prev, [dayId]: text }));
     };
 
+    const handlePhotoUpload = (e) => {
+        const file = e.target.files[0];
+        if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setSenderPhoto(reader.result);
+                setPhotoPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert('Please select an image under 2MB');
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -66,8 +82,14 @@ const LandingPage = () => {
             const payload = {
                 ...formData,
                 messages: customMessages,
-                activeDays: activeDays
+                activeDays: activeDays,
+                senderPhoto: senderPhoto
             };
+
+            console.log('Sending payload:', {
+                hasSenderPhoto: !!senderPhoto,
+                photoLength: senderPhoto?.length
+            });
 
             const res = await axios.post('/api/journey', payload);
             const link = `${window.location.origin}/v/${res.data.urlId}`;
@@ -139,6 +161,25 @@ const LandingPage = () => {
                                         className="w-full p-3 rounded-xl border border-white/40 focus:outline-none focus:ring-2 focus:ring-rose-400 bg-white/70"
                                         onChange={handleChange}
                                     />
+                                </div>
+
+                                {/* Photo Upload */}
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
+                                        📸 Your Photo (Optional, Max 2MB)
+                                    </label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handlePhotoUpload}
+                                        className="w-full p-2 text-sm rounded-xl border border-white/40 focus:outline-none focus:ring-2 focus:ring-rose-400 bg-white/70 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100"
+                                    />
+                                    {photoPreview && (
+                                        <div className="mt-2 flex items-center gap-2">
+                                            <img src={photoPreview} alt="Preview" className="w-12 h-12 rounded-full object-cover border-2 border-rose-300" />
+                                            <span className="text-xs text-green-600">✓ Photo uploaded</span>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* New Customization Options */}

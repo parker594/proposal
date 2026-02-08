@@ -9,7 +9,8 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '2mb' })); // Increased limit for Base64 images
+app.use(express.urlencoded({ limit: '2mb', extended: true }));
 
 // MongoDB Connection (cached for serverless)
 let isConnected = false;
@@ -41,8 +42,10 @@ app.get('/api/test', (req, res) => {
 // Create a new Journey
 app.post('/api/journey', async (req, res) => {
     try {
-        const { senderName, receiverName, language, whatsappNumber, customMessage, messages, activeDays, relationshipType, theme, targetDay } = req.body;
+        const { senderName, receiverName, language, whatsappNumber, customMessage, messages, activeDays, relationshipType, theme, targetDay, senderPhoto } = req.body;
         const urlId = crypto.randomBytes(4).toString('hex');
+
+        console.log('Received senderPhoto:', !!senderPhoto, 'Length:', senderPhoto?.length);
 
         const newJourney = new Journey({
             urlId,
@@ -53,6 +56,7 @@ app.post('/api/journey', async (req, res) => {
             theme,
             whatsappNumber,
             customMessage,
+            senderPhoto,
             messages,
             activeDays: activeDays || ['day1', 'day2', 'day3', 'day4', 'day5', 'day6', 'day7', 'day8'],
             targetDay: targetDay || 'all'

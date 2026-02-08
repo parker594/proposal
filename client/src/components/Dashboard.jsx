@@ -29,8 +29,11 @@ const DayPlaceholder = ({ name, icon: Icon, color }) => (
 );
 
 const Dashboard = ({ journey }) => {
-    const { messages, language, receiverName, senderName, activeDays, theme, relationshipType, targetDay } = journey;
+    const { messages, language, receiverName, senderName, activeDays, theme, relationshipType, targetDay, senderPhoto } = journey;
     const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
+
+    // Debug log
+    console.log('Dashboard journey data:', { senderPhoto: !!senderPhoto, senderName });
 
     // Theme configuration
     const themes = {
@@ -70,7 +73,7 @@ const Dashboard = ({ journey }) => {
     };
 
     if (!isEnvelopeOpen) {
-        return <Envelope senderName={senderName} onOpen={() => setIsEnvelopeOpen(true)} />;
+        return <Envelope senderName={senderName} senderPhoto={senderPhoto} onOpen={() => setIsEnvelopeOpen(true)} />;
     }
 
     // --- STRICT SINGLE DAY VIEW ---
